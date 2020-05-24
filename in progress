@@ -1,0 +1,197 @@
+import turtle, random, time
+
+mywindow = turtle.Screen()
+mywindow.setup(800,800)
+mywindow.title("sneksss")
+mywindow.bgcolor("black")
+
+#---------TITLE SCREEN----------
+
+colorboy = turtle.Turtle()
+colorboy.penup()
+colorboy.hideturtle()
+colorboy.shape("circle")
+colorboy.goto(-320,-400)
+colorboy.pencolor("red")
+colorboy.pendown()
+colorboy.pensize(160)
+colorboy.speed(8)
+colorboy.goto(-320,400)
+colorboy.goto(-320,-10)
+colorboy.color("white")
+colorboy.write("S", font=("Comic Sans MS", 50, "bold"), align="center")
+colorboy.penup()
+colorboy.pencolor("#FF8933")
+colorboy.goto(-160,400)
+colorboy.pendown()
+colorboy.goto(-160,-400)
+colorboy.goto(-160,-10)
+colorboy.color("white")
+colorboy.write("N", font=("Comic Sans MS", 50, "bold"), align="center")
+colorboy.penup()
+colorboy.pencolor("#FFDA33")
+colorboy.goto(0,-400)
+colorboy.pendown()
+colorboy.goto(0,400)
+colorboy.goto(0,-10)
+colorboy.color("white")
+colorboy.write("A", font=("Comic Sans MS", 50, "bold"), align="center")
+colorboy.penup()
+colorboy.pencolor("green")
+colorboy.goto(160,400)
+colorboy.pendown()
+colorboy.goto(160,-400)
+colorboy.goto(160,-10)
+colorboy.color("white")
+colorboy.write("K", font=("Comic Sans MS", 50, "bold"), align="center")
+colorboy.penup()
+colorboy.pencolor("blue")
+colorboy.goto(320,-400)
+colorboy.pendown()
+colorboy.goto(320,400)
+colorboy.goto(320,-10)
+colorboy.color("white")
+colorboy.write("E", font=("Comic Sans MS", 55, "bold"), align="center")
+colorboy.penup()
+colorboy.hideturtle()
+colorboy.shape("square")
+colorboy.color("black")
+colorboy.turtlesize(40,40)
+colorboy.goto(0,800)
+colorboy.speed(1.5)
+colorboy.showturtle()
+colorboy.goto(0,0)
+colorboy.clear()
+
+borderboy = turtle.Turtle()
+borderboy.penup()
+borderboy.hideturtle()
+borderboy.pencolor("white")
+borderboy.speed(0)
+borderboy.pensize(8)
+borderboy.goto(-380,380)
+borderboy.pendown()
+borderboy.goto(-380,-380)
+borderboy.goto(380,-380)
+borderboy.goto(380,380)
+borderboy.goto(-380,380)
+
+#-------------TURTLE CREATION------------------
+colorboy.hideturtle()
+colorboy.goto(0, 330)
+colorboy.color("white")
+score = 0
+colorboy.write("Score: ",score, font=("Comic Sans MS", 12, "normal"), align="center")
+
+snake = turtle.Turtle()
+snake.penup()
+snake.shape("square")
+snake.color("white")
+snake.turtlesize(1,1)
+
+point = turtle.Turtle()
+point.penup()
+point.goto(random.randint(-300, 300), random.randint(-300, 300))
+point.shape("circle")
+point.color("red")
+point.turtlesize(0.8)
+point.speed(0)
+
+#-------------FUNCTION---------------
+right = True
+left = False
+up = False
+down = False
+keypress = False
+def goup():
+    global right, left, up, down, keypress
+    right = False
+    left = False
+    up = True
+    down = False
+    keypress = True
+def godown():
+    global right, left, up, down, keypress
+    right = False
+    left = False
+    up = False
+    down = True
+    keypress = True
+def goleft():
+    global right, left, up, down, keypress
+    right = False
+    left = True
+    up = False
+    down = False
+    keypress = True
+def goright():
+    global right, left, up, down, keypress
+    right = True
+    left = False
+    up = False
+    down = False
+    keypress = True
+
+def scorepoint(snake,sr,p,pr):
+    d = snake.distance(p.xcor(), p.ycor())
+    if d < sr + (pr * 20):
+        global score
+        score+=1
+        colorboy.clear()
+        colorboy.write("Score: "+ str(score), font=("Comic Sans MS", 10, "normal"), align="center")
+        point.goto(random.randint(-300, 300), random.randint(-300, 300))
+        #createTurtle(snake.xcor(), snake.ycor())
+
+snakeTail = []
+i = -1
+def createTurtle(x,y):
+    global i
+    snakeTail.append(turtle.Turtle())
+    i +=1
+    snakeTail[i].penup()
+    snakeTail[i].shape("square")
+    snakeTail[i].color("white")
+    snakeTail[i].turtlesize(1, 1)
+    snakeTail[i].goto(x,y)
+
+#----------------INITIALIZING------------------------
+mywindow.listen()
+mywindow.onkey(goup,'Up')
+mywindow.onkey(godown,'Down')
+mywindow.onkey(goleft,'Left')
+mywindow.onkey(goright,'Right')
+
+die = False
+time.sleep(1)
+#---------------------MAIN LOOP-----------------------
+starttime = time.time()
+while die == False:
+    if time.time() - starttime >= 0.5 or keypress == True:
+        if right == True:
+            snake.goto(snake.xcor() + 25, snake.ycor())
+        elif left == True:
+            snake.goto(snake.xcor() - 25, snake.ycor())
+        elif up == True:
+            snake.goto(snake.xcor(), snake.ycor() + 25)
+        elif down == True:
+            snake.goto(snake.xcor(), snake.ycor() - 20)
+        starttime = time.time()
+        keypress = False
+
+    scorepoint(snake,1,point,0.8)
+    snakeCoordinates = [snake.xcor(), snake.ycor()]
+
+    if snake.xcor()>365 or snake.xcor()<-365 or snake.ycor()>365 or snake.ycor()<-365:
+        die = True
+
+#-------------------END-----------------------
+point.hideturtle()
+snake.hideturtle()
+colorboy.clear()
+colorboy.goto(0,0)
+colorboy.write("Good game!", font=("Comic Sans MS", 40, "normal"), align="center")
+time.sleep(2)
+colorboy.clear()
+colorboy.write("Your final score is "+ str(score)+ " points", font=("Comic Sans MS", 30, "normal"), align="center")
+time.sleep(4)
+mywindow.bye()
