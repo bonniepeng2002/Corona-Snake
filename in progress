@@ -11,7 +11,7 @@ colorboy = turtle.Turtle()
 colorboy.penup()
 colorboy.hideturtle()
 colorboy.shape("circle")
-colorboy.goto(-320,-400)
+'''colorboy.goto(-320,-400)
 colorboy.pencolor("red")
 colorboy.pendown()
 colorboy.pensize(160)
@@ -62,7 +62,7 @@ colorboy.speed(1.5)
 colorboy.showturtle()
 colorboy.goto(0,0)
 colorboy.clear()
-
+'''
 borderboy = turtle.Turtle()
 borderboy.penup()
 borderboy.hideturtle()
@@ -88,13 +88,14 @@ snake.penup()
 snake.shape("square")
 snake.color("white")
 snake.turtlesize(1,1)
+snake.speed(1)
 
 point = turtle.Turtle()
 point.penup()
 point.goto(random.randint(-300, 300), random.randint(-300, 300))
 point.shape("circle")
 point.color("red")
-point.turtlesize(0.8)
+point.turtlesize(0.5)
 point.speed(0)
 
 #-------------FUNCTION---------------
@@ -102,37 +103,32 @@ right = True
 left = False
 up = False
 down = False
-keypress = False
 def goup():
-    global right, left, up, down, keypress
+    global right, left, up, down
     right = False
     left = False
     up = True
     down = False
-    keypress = True
 def godown():
-    global right, left, up, down, keypress
+    global right, left, up, down
     right = False
     left = False
     up = False
     down = True
-    keypress = True
 def goleft():
-    global right, left, up, down, keypress
+    global right, left, up, down
     right = False
     left = True
     up = False
     down = False
-    keypress = True
 def goright():
-    global right, left, up, down, keypress
+    global right, left, up, down
     right = True
     left = False
     up = False
     down = False
-    keypress = True
 
-def scorepoint(snake,sr,p,pr):
+def scorePoint(snake,sr,p,pr):
     d = snake.distance(p.xcor(), p.ycor())
     if d < sr + (pr * 20):
         global score
@@ -140,19 +136,45 @@ def scorepoint(snake,sr,p,pr):
         colorboy.clear()
         colorboy.write("Score: "+ str(score), font=("Comic Sans MS", 10, "normal"), align="center")
         point.goto(random.randint(-300, 300), random.randint(-300, 300))
-        #createTurtle(snake.xcor(), snake.ycor())
+        createTail()
+
+def crashTail(snake, sr, tail, tr):
+    d = snake.distance(tail.xcor(), tail.ycor())
+    if d < sr + (tr * 10):
+        gameOver()
 
 snakeTail = []
 i = -1
-def createTurtle(x,y):
+def createTail():
     global i
     snakeTail.append(turtle.Turtle())
     i +=1
     snakeTail[i].penup()
+    snakeTail[i].hideturtle()
     snakeTail[i].shape("square")
     snakeTail[i].color("white")
     snakeTail[i].turtlesize(1, 1)
-    snakeTail[i].goto(x,y)
+    snakeTail[i].speed(0)
+
+def moveTail():
+    for j in range(0,len(snakeTail)):
+        snakeTail[j].showturtle()
+        snakeTail[j].goto(snakeCoordinates[len(snakeCoordinates)-j-2])
+
+def gameOver():
+    point.hideturtle()
+    snake.hideturtle()
+    for i in range(0,len(snakeTail)):
+        snakeTail[i].hideturtle()
+    colorboy.clear()
+    colorboy.goto(0, 0)
+    colorboy.write("Good game!", font=("Comic Sans MS", 40, "normal"), align="center")
+    time.sleep(2)
+    colorboy.clear()
+    colorboy.write("Your final score is " + str(score) + " points", font=("Comic Sans MS", 30, "normal"),
+                   align="center")
+    time.sleep(4)
+    mywindow.bye()
 
 #----------------INITIALIZING------------------------
 mywindow.listen()
@@ -160,38 +182,38 @@ mywindow.onkey(goup,'Up')
 mywindow.onkey(godown,'Down')
 mywindow.onkey(goleft,'Left')
 mywindow.onkey(goright,'Right')
-
 die = False
-time.sleep(1)
+snakeCoordinates = []
+
+FPS = 9  #60 frames per second
+refreshAt = 1/FPS #and so this is the refresh interval
+startOfInterval = time.clock()
+mywindow.tracer(0,0)
 #---------------------MAIN LOOP-----------------------
-starttime = time.time()
+
 while die == False:
-    if time.time() - starttime >= 0.5 or keypress == True:
+    endOfInterval = time.clock()
+    if endOfInterval - startOfInterval >= refreshAt:
         if right == True:
-            snake.goto(snake.xcor() + 25, snake.ycor())
+            snake.goto(snake.xcor() + 20, snake.ycor())
         elif left == True:
-            snake.goto(snake.xcor() - 25, snake.ycor())
+            snake.goto(snake.xcor() - 20, snake.ycor())
         elif up == True:
-            snake.goto(snake.xcor(), snake.ycor() + 25)
+            snake.goto(snake.xcor(), snake.ycor() + 20)
         elif down == True:
             snake.goto(snake.xcor(), snake.ycor() - 20)
-        starttime = time.time()
-        keypress = False
-
-    scorepoint(snake,1,point,0.8)
-    snakeCoordinates = [snake.xcor(), snake.ycor()]
+        scorePoint(snake,1,point,0.8)
+        snakeCoordinates.append([snake.xcor(), snake.ycor()])
+        moveTail()
+        for i in range(0,len(snakeTail)):
+            crashTail(snake, 1, snakeTail[i], 1)
+        mywindow.update()  # manually draw the screen
+        startOfInterval = time.clock()
 
     if snake.xcor()>365 or snake.xcor()<-365 or snake.ycor()>365 or snake.ycor()<-365:
         die = True
 
 #-------------------END-----------------------
-point.hideturtle()
-snake.hideturtle()
-colorboy.clear()
-colorboy.goto(0,0)
-colorboy.write("Good game!", font=("Comic Sans MS", 40, "normal"), align="center")
-time.sleep(2)
-colorboy.clear()
-colorboy.write("Your final score is "+ str(score)+ " points", font=("Comic Sans MS", 30, "normal"), align="center")
-time.sleep(4)
-mywindow.bye()
+
+gameOver()
+
