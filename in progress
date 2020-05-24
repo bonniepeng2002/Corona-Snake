@@ -1,4 +1,4 @@
-import turtle, random, time
+import turtle, random, time, colorsys
 
 mywindow = turtle.Screen()
 mywindow.setup(800,800)
@@ -95,7 +95,7 @@ point.penup()
 point.goto(random.randint(-300, 300), random.randint(-300, 300))
 point.shape("circle")
 point.color("red")
-point.turtlesize(0.5)
+point.turtlesize(0.7)
 point.speed(0)
 
 #-------------FUNCTION---------------
@@ -145,6 +145,7 @@ def crashTail(snake, sr, tail, tr):
 
 snakeTail = []
 i = -1
+
 def createTail():
     global i
     snakeTail.append(turtle.Turtle())
@@ -189,10 +190,18 @@ FPS = 9  #60 frames per second
 refreshAt = 1/FPS #and so this is the refresh interval
 startOfInterval = time.clock()
 mywindow.tracer(0,0)
+z=0
 #---------------------MAIN LOOP-----------------------
 
 while die == False:
     endOfInterval = time.clock()
+    if z < 800:
+        z += 1
+        hue = z / 800
+        colorTuple = colorsys.hsv_to_rgb(hue, 1, 1)
+    elif z >= 800:
+        z = 0
+    point.color(colorTuple)
     if endOfInterval - startOfInterval >= refreshAt:
         if right == True:
             snake.goto(snake.xcor() + 20, snake.ycor())
