@@ -1,7 +1,6 @@
 #main.py
 import turtle, random, time, colorsys, os
 
-os.chdir("C:/Users/Bonnie/PycharmProjects/tens/venv")
 mywindow = turtle.Screen()
 mywindow.setup(1309,783)
 mywindow.bgpic("arcade.gif")
